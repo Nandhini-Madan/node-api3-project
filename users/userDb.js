@@ -34,11 +34,12 @@ function insert(user) {
     });
 }
 
-function update(id, changes) {
-  return db('users')
-    .where({ id })
-    .update(changes);
-}
+async function update(id, changes) {
+  await db('users')
+     .where({ id })
+     .update(changes);
+     return getById(id)
+ }
 
 function remove(id) {
   return db('users')
