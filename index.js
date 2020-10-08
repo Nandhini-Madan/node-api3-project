@@ -7,7 +7,7 @@ const server=express()
 const port =4000
 
 server.use(logger("long"))
-server.use(welcomeRouter)
+//server.use(welcomeRouter)
 server.use(userRouter)
 
 server.listen(port,()=>{

@@ -1,95 +1,101 @@
 const express = require('express');
-const userDb = require("./userDb")
+const db = require("./userDb")
+const post_db = require("../posts/postDb")
+const { validateUser,validateUserId,validatePost}=require("../middleware/userMidW")
+
 const router = express.Router();
 
-router.post('/', (req, res) => {
+router.post('/', validateUser,(req, res) => {
   // do your magic!
+  db.insert(req.body)
+  .then((newUser)=>{
+    res.status(201).json(newUser)
+    
+  })
+  .catch((error) => {
+    next(error)
+  })
 });
 
-router.post('/:id/posts', (req, res) => {
-  // do your magic!
-
+router.post('/:id/posts',validatePost(), validateUserId(),(req, res) => {
+    // do your magic!
+    post_db.insert(req.params.id, req.body)
+  .then(post=>{
+    res.status(200).json(post)
+   
+  })
+  .catch((error) => {
+    next(error)
+  })
 
 });
 
 router.get('/', (req, res) => {
   // do your magic!
+  db.get()
+  .then(user=>{
+ res.status(200).json(user)  
+  })
+  .catch((error) => {
+    next(error)
+  })
 });
 
-router.get('/:id', validateUserId(), (req, res) => {
+router.get('/:id',validateUserId(), (req, res) => {
   // do your magic!
-  res.status(200).json(req.user)
+  // user is attached to the req in validateUserId
+    res.status(200).json(req.user)
+ 
 });
 
-router.get('/:id/posts', validateUserId(), (req, res) => {
+router.get('/:id/posts',validateUserId(), (req, res) => {
   // do your magic!
-  res.status(200).json(req.user)
+db.getUserPosts(req.params.id)
+.then(post=>{
+ 
+    return res.status(200).json(post)
+  
+})
+.catch((error) => {
+  next(error)
+})
 
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id',(req, res) => {
   // do your magic!
-});
-
-router.put('/:id', validateUser(), validateUserId, (req, res) => {
-  // do your magic!
-
-  userDb.update(req.params.id, req.body)
-    .then((user) => {
-      if (user) {
-        res.status(200).json(user)
-      }
-      else {
-        res.status(404).json({
-          message: "the user could not be found"
-        })
-      }
+  db.remove(req.prames.id)
+.then ((removed)=>{
+  if (removed > 0){
+   res.status(200).json({message: "user has been deleted"})
+  }else{
+    res.status(404).json({
+      message: "The user could not be found",
     })
+  }
+})
+.catch((error) => {
+  next(error)
+})
+
 });
 
-//custom middleware
-
-function validateUserId() {
-  return (req, res, next) => {
-    userDb.getById(req.params.id)
-      .then((user) => {
-        if (user) {
-          console.log("hi")
-          req.user = user
-          next()
-        }
-        else {
-          res.status(404).json({
-            message: "User not found"
-          })
-        }
-      })
-      .catch((error) => {
-        console.log("error", error)
-        res.status(500).json({
-          message: "Error retrieving the user"
-        })
-      })
-    // do your magic!
-  }
-
-}
-
-function validateUser() {
-  return (req, res, next) => {
-    if (!req.body.name) {
-      console.log("ValidateData", req.body.name)
-      return res.status(400).json({
-        message: "missing required name field"
+router.put('/:id',validateUser(), validateUserId(),(req, res) => {
+  // do your magic!
+  db.update(req.params.id, req.body)
+  .then((update)=>{
+    if(update){
+      res.status(200).json(update)
+    }else {
+      res.status(404).json({
+        message: "The user could not be found",
       })
     }
-    next()
-  }
-  // do your magic!
-}
+  })
+  .catch((error) => {
+    next(error)
+  })
 
-function validatePost(req, res, next) {
-  // do your magic!
-}
+});
 
 module.exports = router;

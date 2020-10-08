@@ -33,13 +33,11 @@ function insert(user) {
       return getById(ids[0]);
     });
 }
-
-async function update(id, changes) {
-  await db('users')
-     .where({ id })
-     .update(changes);
-     return getById(id)
- }
+function update(id, changes) {
+  return db('users')
+    .where({ id })
+    .update(changes);
+}
 
 function remove(id) {
   return db('users')
