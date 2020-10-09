@@ -37,9 +37,9 @@ function validateUser() {
     // do your magic!
     return (req, res, next) => {
       if (!req.body) {
-        return res.status(400).json({ message: "missing user data" });
+       res.status(400).json({ message: "missing user data" });
       } else if (!req.body.name) {
-        return res.status(400).json({ message: "missing required name field" });
+         res.status(400).json({ message: "missing required name field" });
       }
       next();
     };
@@ -48,13 +48,15 @@ function validateUser() {
 function validatePost() {
     return (req, res, next) => {
         if (!req.body) {
+            console.log("req",req.body)
             res.status(400).json({ message: "missing post data" })
+            next()
 
         } else if (!req.body.text) {
             res.status(400).json({ message: "missing required text field" })
-        } else {
             next()
         }
+        next()
     }
 }
 

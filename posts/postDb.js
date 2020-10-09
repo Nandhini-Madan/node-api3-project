@@ -18,12 +18,17 @@ function getById(id) {
     .first();
 }
 
-function insert(post) {
-  return db('posts')
-    .insert(post)
-    .then(ids => {
-      return getById(ids[0]);
-    });
+function findUserPostById(userId, id) {
+	return db("posts")
+		.where({ id, user_id: userId })
+		.first()
+}
+
+async function insert(userId, post) {
+	const data = { user_id: userId, ...post }
+	const [id] = await db("posts").insert(data)
+
+	return findUserPostById(userId, id)
 }
 
 async function update(id, changes) {

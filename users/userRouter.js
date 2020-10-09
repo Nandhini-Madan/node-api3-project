@@ -5,6 +5,7 @@ const { validateUser,validateUserId,validatePost}=require("../middleware/userMID
 
 const router = express.Router();
 
+
 router.post('/', validateUser(),(req, res) => {
   // do your magic!
   console.log("ht")

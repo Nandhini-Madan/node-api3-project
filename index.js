@@ -5,7 +5,7 @@ const logger=require("./middleware/logger")
 const welcomeRouter=require("./welcome/welcome")
 const server=express()
 const port =4000
-
+server.use(express.json())
 server.use(logger("long"))
 //server.use(welcomeRouter)
 server.use(userRouter)
